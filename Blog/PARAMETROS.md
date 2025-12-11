@@ -4,13 +4,13 @@ Guía breve para mantener el proyecto ordenado y escalable.
 
 ## Filosofía
 - Separar por dominio/feature antes que por tipo de archivo.
-- Capas claras: UI ➜ lógica de vista ➜ servicios/datos ➜ utils/lib.
+- Capas claras: UI → lógica de vista → servicios/datos → utils/lib.
 - Evitar dependencias cruzadas entre features; compartir solo por `components/`, `hooks/`, `lib/`, `utils/`.
 
 ## Contexto del proyecto (resumen maestro)
-- Plataforma personal (blog profesional + portafolio/página personal) con automatización de contenido (n8n) y administración completa.
+- Proyecto “El Código de Hoy”: plataforma personal (blog profesional + portafolio/página personal) donde se publican a diario las últimas noticias del mundo de la tecnología y TI, con automatización de contenido (n8n) y administración completa.
 - Backend: Supabase (Postgres, RLS, policies por rol, Storage, PostgREST, triggers moddatetime).
-- Frontend: React + Vite + HeroUI, routing (React Router), estado global (Zustand o Redux Toolkit), data fetching (SWR/React Query), editor markdown/richtext (TipTap recomendado).
+- Frontend: React + Vite + HeroUI; routing (React Router); estado global (Zustand o Redux Toolkit); data fetching (SWR/React Query); editor markdown/richtext (TipTap recomendado).
 - Automatización: n8n para scraping TI, generación de resúmenes, clasificación por tags, inserción de borradores y medios.
 - Infra: Vercel/Netlify, GitHub, CI/CD básico.
 - Roles: Admin (todo), Editor (artículos), Viewer (lectura interna), Público (solo publicado).
@@ -18,7 +18,7 @@ Guía breve para mantener el proyecto ordenado y escalable.
 - Requisitos clave: SEO avanzado, métricas de visitas, control editorial (pendiente/aprobado/rechazado), versionado automático, RLS por tabla.
 
 ### Requerimientos funcionales (resumen)
-- Blogging: CRUD de artículos, borradores, publicación/programación, categorías/tags, control editorial, versionado, YouTube links, medios, SEO por artículo, buscador interno, métricas de visitas.
+- Blogging: CRUD de artículos, borradores, publicación/programación, categorías/tags, control editorial, versionado, enlaces YouTube, medios, SEO por artículo, buscador interno, métricas de visitas.
 - Automatización (n8n): generar artículos e imágenes, insertar como borradores, sugerir videos, clasificar por tags.
 - Portafolio / página personal: página pública `/me` administrable con biografía, experiencia, proyectos, habilidades, redes sociales, páginas personalizadas en JSON y CRUD completo.
 - Administración: dashboard, control de roles, restricción de accesos, CRUD de perfiles, logs de actividad.
@@ -32,14 +32,14 @@ Guía breve para mantener el proyecto ordenado y escalable.
 - Usabilidad: dashboard administrable, UI limpia y accesible.
 
 ### Flujo operativo (alto nivel)
-- Creación: autor crea borrador, añade categorías/tags, guarda versiones, videos, publica.
+- Creación: autor crea borrador, añade categorías/tags, guarda versiones, agrega videos, publica.
 - Automatización: n8n obtiene noticias TI, genera contenido, inserta en Supabase y notifica.
 - Visualización pública: `/blog` lista publicados; `/blog/:slug` muestra detalle + SEO + videos; `/me` muestra la página personal/portafolio con experiencia, proyectos, habilidades, redes.
 - Roles: Admin (todo), Editor (artículos), Viewer (lectura interna), Público (publicado).
 
 ## Parámetros para generar o modificar código
 - Revisar antes de tocar: leer archivos y difs relevantes; entender el estado actual y los requisitos de `PARAMETROS.md`.
-- Aprender de errores: documentar en notas internas (commits/mensajes) qué falló y cómo se corrigió; evitar repetirlos.
+- Aprender de errores: documentar qué falló y cómo se corrigió; evitar repetirlos.
 - Cambios limpios: seguir la arquitectura de carpetas, tipado claro, separación de responsabilidades y uso de HeroUI + Tailwind.
 - Guardrails de calidad: no romper roles/RLS/SEO/flujo editorial; no dejar TODOs sin contexto; evitar dependencias cruzadas entre features.
 - Preflight: antes de generar código, validar que no existan conflictos con configuraciones previas (tailwind, rutas, providers); preferir componentes reutilizables.
@@ -84,6 +84,34 @@ Guía breve para mantener el proyecto ordenado y escalable.
 - Utils/lib:
   - `lib`: funciones puras más grandes o reutilizables entre apps.
   - `utils`: helpers chicos, sin dependencias pesadas.
+
+## UI/UX y estilos
+- Estilo moderno y minimalista; evitar saturación visual.
+- Todo debe ser responsive (mobile-first).
+- Modo claro/oscuro siempre disponible; mantener `darkMode: "class"` y colocar un toggle visible en la UI.
+- Toggle de tema reutilizable (ThemeToggle) en `components/ui`, usable en todas las páginas (posición típica: esquina superior derecha; si se usa fijo, `position: fixed; top: 10px; right: 10px; z-index: 50`).
+- Accesibilidad y jerarquía visual claras (contrastes, tipografía legible, estados de foco).
+- Fondos: modo claro `#EEEEEF`, modo oscuro `#2C2C32`; paneles oscuros alrededor de `#1f2026`.
+- Botones principales con el color primario `#F4320B` (hover `#C82909`).
+- Paleta de color “El Código de Hoy” (custom properties sugeridas):
+  ```
+  --color-50:  #FEEBE7;
+  --color-100: #FCC6BB;
+  --color-200: #FAA18F;
+  --color-300: #F87C63;
+  --color-400: #F54927;
+  --color-500: #F4320B; // Primario (rojo intenso)
+  --color-600: #C82909;
+  --color-700: #9C2007;
+  --color-800: #701705;
+  --color-900: #440E03;
+  --color-950: #180501;
+  ```
+  - Primario: `--color-500` (#F4320B) para botones principales, links, headers.
+  - Secundario: `--color-300` (#F87C63) para botones secundarios y énfasis suave.
+  - Fondos: `--color-50` (#FEEBE7) principal; `--color-100` (#FCC6BB) tarjetas/secciones; `--color-200` (#FAA18F) hover/destacado.
+  - Texto/headers: `--color-700` (#9C2007), `--color-800` (#701705), `--color-900` (#440E03), `--color-950` (#180501) para textos en fondos claros.
+  - Acento/alerta: `--color-400` (#F54927); error/hover primario: `--color-600` (#C82909).
 
 ## HeroUI + Tailwind
 - Tailwind ya está configurado con el plugin `heroui` en `tailwind.config.js`.

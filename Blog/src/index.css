@@ -4,8 +4,24 @@
 
 :root {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
-  color: #0f172a;
-  background-color: #f8fafc;
+  color: var(--text-color, #0f172a);
+  background-color: var(--bg-color, #EEEEEF);
+  --color-50: #FEEBE7;
+  --color-100: #FCC6BB;
+  --color-200: #FAA18F;
+  --color-300: #F87C63;
+  --color-400: #F54927;
+  --color-500: #F4320B;
+  --color-600: #C82909;
+  --color-700: #9C2007;
+  --color-800: #701705;
+  --color-900: #440E03;
+  --color-950: #180501;
+  --bg-color: #EEEEEF;
+  --panel-color: #ffffff;
+  --text-color: #0f172a;
+  --subtle-text: #475569;
+  --border-color: rgba(0, 0, 0, 0.06);
 }
 
 * {
@@ -21,4 +37,14 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+.dark {
+  --bg-color: #2C2C32;
+  --panel-color: #1f2026;
+  --text-color: #e2e8f0;
+  --subtle-text: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
