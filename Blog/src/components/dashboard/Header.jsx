@@ -45,7 +45,7 @@ export default function Header() {
         <div className="relative" ref={menuRef}>
           <button
             aria-label="Abrir menú de usuario"
-            className="inline-flex items-center gap-3 rounded-full h-11 bg-[var(--panel-color)] border border-[var(--border-color)] hover:border-[var(--color-500)] transition-colors shadow-sm min-w-[160px] px-3"
+            className="inline-flex items-center gap-3 rounded-full h-11 bg-[var(--panel-color)] border border-[var(--border-color)] hover:border-[var(--color-500)] transition-colors shadow-sm min-w-[120px] px-3"
             style={{
               paddingLeft: "1.5px",
               paddingRight: "1.5px",

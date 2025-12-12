@@ -14,15 +14,15 @@ const tabs = [
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)]">
+    <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] transition-[background-color,color] duration-200 ease">
       <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-4">
         <div className="flex items-center justify-between gap-4 flex-wrap">
           <div className="flex flex-1 justify-start px-3">
             <div
-              className="inline-flex flex-wrap gap-2 bg-[var(--panel-color)] border border-[var(--border-color)] rounded-full px-3 py-0 shadow-sm h-11 items-center min-w-[520px]"
+              className="theme-surface inline-flex flex-wrap gap-2 bg-[var(--panel-color)] border border-[var(--border-color)] rounded-full px-3 py-0 shadow-sm h-11 items-center min-w-[520px]"
               style={{
-                paddingLeft: "3px",
-                paddingRight: "3px",
+                paddingLeft: "12px",
+                paddingRight: "12px",
               }}
             >
               {tabs.map((tab) => (
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }) {
           </div>
         </div>
 
-        <main className="bg-[var(--panel-color)] border border-[var(--border-color)] rounded-2xl p-6 min-h-[60vh] shadow-sm">
+        <main className="theme-surface bg-[var(--panel-color)] border border-[var(--border-color)] rounded-2xl p-6 min-h-[60vh] shadow-sm transition-[background-color,color,border-color] duration-200 ease">
           {children ?? <Outlet />}
         </main>
       </div>

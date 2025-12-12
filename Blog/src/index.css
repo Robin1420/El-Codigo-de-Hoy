@@ -33,10 +33,30 @@ body {
   min-height: 100vh;
   background-color: inherit;
   color: inherit;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
 #root {
   min-height: 100vh;
+}
+
+.theme-surface {
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.theme-switching,
+.theme-switching body,
+.theme-switching #root,
+.theme-switching .theme-surface {
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
 }
 
 .dark {
