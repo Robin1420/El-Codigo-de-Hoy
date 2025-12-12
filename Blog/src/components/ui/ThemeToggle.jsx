@@ -28,27 +28,23 @@ export function ThemeToggle({ className = "", style = {} }) {
     document.documentElement.classList.toggle("dark", next === "dark");
   };
 
-  const knobTransform = useMemo(() => (isDark ? "translateX(127px)" : "translateX(0)"), [isDark]);
+  // Ajuste de desplazamiento acorde al ancho compacto del switch
+  const knobTransform = useMemo(() => (isDark ? "translateX(32px)" : "translateX(0)"), [isDark]);
 
   return (
     <button
       onClick={handleToggle}
-      className={`relative inline-flex items-center justify-center rounded-full transition-colors border border-[var(--border-color)] ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-full transition-colors border border-[var(--border-color)] h-11 min-w-[70px] px-2 ${className}`}
       style={{
         backgroundColor: isDark ? "#1f2026" : "#e7e7e9",
         color: isDark ? "#f1f1f2" : "#1f1f1f",
-        width: "170px",
-        height: "40px",
         overflow: "hidden",
         ...style,
       }}
       aria-label="Cambiar tema"
     >
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-semibold tracking-wide pointer-events-none">
-        {isDark ? "Oscuro" : "Claro"}
-      </span>
       <span
-        className="absolute inset-y-1 left-1 flex items-center justify-center w-[32px] rounded-full border shadow-sm transition-transform duration-300 ease-in-out"
+        className="absolute inset-y-1 left-1 flex items-center justify-center w-[30px] rounded-full border shadow-sm transition-transform duration-300 ease-in-out"
         style={{
           transform: knobTransform,
           backgroundColor: isDark ? "#2C2C32" : "#ffffff",

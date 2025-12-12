@@ -85,6 +85,14 @@ GuÃ­a breve para mantener el proyecto ordenado y escalable.
   - `lib`: funciones puras mÃ¡s grandes o reutilizables entre apps.
   - `utils`: helpers chicos, sin dependencias pesadas.
 
+## Routing
+- React Router v6+ para toda la navegación.
+- BrowserRouter en main.jsx y rutas declaradas en un router central.
+- Rutas públicas: / (landing/login), /login (si se separa), blog público.
+- Rutas protegidas: /dashboard y subsecciones; guard que lea el rol desde profiles (admin obligatorio) y redirija si no cumple.
+- Layouts por sección: público y dashboard (sidebar + header).
+- Fallback 404 con redirección a landing o página de error.
+
 ## UI/UX y estilos
 - Estilo moderno y minimalista; evitar saturaciÃ³n visual.
 - Todo debe ser responsive (mobile-first).
@@ -131,3 +139,4 @@ GuÃ­a breve para mantener el proyecto ordenado y escalable.
 - Un archivo por responsabilidad clara; evita God components.
 - Prefiere composiciÃ³n sobre herencia.
 - Evita imports relativos quebradizos (`../../..`); si usas path aliases, defÃ­nelos en `vite.config.js` y `jsconfig/tsconfig`.
+
