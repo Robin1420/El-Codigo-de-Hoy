@@ -1,9 +1,17 @@
 import "./FullScreenLoader.css";
 
-export function FullScreenLoader() {
+export function FullScreenLoader({
+  fullScreen = true,
+  label = "Cargando",
+  minHeightClassName,
+}) {
+  const containerClassName = fullScreen
+    ? "min-h-screen flex items-center justify-center bg-[var(--bg-color)]"
+    : `w-full flex items-center justify-center ${minHeightClassName ?? "min-h-[50vh]"} mt-6`;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-color)]">
-      <div className="loader-stack" aria-label="Cargando" role="status">
+    <div className={containerClassName}>
+      <div className="loader-stack" aria-label={label} role="status">
         <div className="spinner">
           <div />
           <div />
@@ -13,7 +21,7 @@ export function FullScreenLoader() {
           <div />
         </div>
         <p className="loader-text">
-          Cargando
+          {label}
           <span className="loader-dots">
             <span>.</span>
             <span>.</span>

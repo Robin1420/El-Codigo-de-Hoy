@@ -1,7 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { slugify } from "../../../lib/slugify";
 import { listAllCategories } from "../../categories/services/categoriesService";
+import { createTag, listAllTags } from "../../tags/services/tagsService";
 import { supabase } from "../../../lib/supabaseClient";
+import { useToast } from "../../../components/ui/ToastProvider";
+import CodeMirror from "@uiw/react-codemirror";
+import { html } from "@codemirror/lang-html";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { Modal } from "../../../components/ui/Modal";
 
 const COVER_BUCKET = "covers";
 const MAX_COVER_MB = 15;
@@ -30,6 +36,13 @@ function getContentText(content) {
   return "";
 }
 
+function getContentType(content, fallback) {
+  if (content && typeof content === "object" && content.type) {
+    return content.type;
+  }
+  return fallback;
+}
+
 function safeFileExt(name) {
   const parts = String(name || "").split(".");
   const ext = parts.length > 1 ? parts[parts.length - 1] : "";
@@ -51,12 +64,17 @@ export function PostForm({
   onCancel,
   variant = "card",
 }) {
+  const toast = useToast();
   const [title, setTitle] = useState(initialValues?.title ?? "");
   const [slug, setSlug] = useState(initialValues?.slug ?? "");
   const [status, setStatus] = useState(initialValues?.status ?? "draft");
   const [excerpt, setExcerpt] = useState(initialValues?.excerpt ?? "");
   const [contentText, setContentText] = useState(getContentText(initialValues?.content));
+  const [contentFormat, setContentFormat] = useState(
+    getContentType(initialValues?.content, mode === "create" ? "html" : "markdown"),
+  );
   const [coverImageUrl, setCoverImageUrl] = useState(initialValues?.cover_image_url ?? "");
+  const [youtubeUrl, setYoutubeUrl] = useState(initialValues?.youtube_url ?? "");
   const [categoryId, setCategoryId] = useState(
     initialValues?.category_id === null || initialValues?.category_id === undefined
       ? ""
@@ -73,6 +91,11 @@ export function PostForm({
   const [categories, setCategories] = useState([]);
   const [coverUploading, setCoverUploading] = useState(false);
   const [coverUploadError, setCoverUploadError] = useState("");
+  const [tags, setTags] = useState([]);
+  const [tagQuery, setTagQuery] = useState("");
+  const [tagCreating, setTagCreating] = useState(false);
+  const [selectedTagIds, setSelectedTagIds] = useState(initialValues?.tag_ids ?? []);
+  const [codeEditorOpen, setCodeEditorOpen] = useState(false);
 
   useEffect(() => {
     if (!autoSlug) return;
@@ -85,7 +108,9 @@ export function PostForm({
     setStatus(initialValues?.status ?? "draft");
     setExcerpt(initialValues?.excerpt ?? "");
     setContentText(getContentText(initialValues?.content));
+    setContentFormat(getContentType(initialValues?.content, mode === "create" ? "html" : "markdown"));
     setCoverImageUrl(initialValues?.cover_image_url ?? "");
+    setYoutubeUrl(initialValues?.youtube_url ?? "");
     setCategoryId(
       initialValues?.category_id === null || initialValues?.category_id === undefined
         ? ""
@@ -96,6 +121,7 @@ export function PostForm({
     setSeoDescription(initialValues?.seo_description ?? "");
     setCanonicalUrl(initialValues?.canonical_url ?? "");
     setNoIndex(Boolean(initialValues?.no_index));
+    setSelectedTagIds(initialValues?.tag_ids ?? []);
   }, [initialValues]);
 
   useEffect(() => {
@@ -114,7 +140,39 @@ export function PostForm({
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    listAllTags()
+      .then((rows) => {
+        if (cancelled) return;
+        setTags(rows);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setTags([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const canSubmit = useMemo(() => title.trim().length > 0, [title]);
+  const tagQueryTrimmed = tagQuery.trim();
+  const tagExists = useMemo(() => {
+    if (!tagQueryTrimmed) return false;
+    const queryLower = tagQueryTrimmed.toLowerCase();
+    return tags.some(
+      (tag) => tag.name.toLowerCase() === queryLower || tag.slug.toLowerCase() === slugify(tagQueryTrimmed),
+    );
+  }, [tagQueryTrimmed, tags]);
+  const isHtmlContent = contentFormat === "html";
+  const contentTextareaClassName = [
+    "rounded-xl border px-3 py-2 outline-none transition-colors resize-y",
+    "focus:border-[var(--color-500)]",
+    "bg-transparent border-[var(--border-color)] text-[var(--text-color)]",
+  ].join(" ");
+  const editorWrapperClassName =
+    "rounded-xl border border-[#30363d] bg-[#0d1117] shadow-inner overflow-hidden";
 
   const uploadCover = async (file) => {
     if (!file) return;
@@ -198,8 +256,9 @@ export function PostForm({
           title: title.trim(),
           slug: slug.trim() || slugify(title),
           excerpt: excerpt.trim() || null,
-          content: contentText.trim() ? { type: "markdown", body: contentText.trim() } : null,
+          content: contentText.trim() ? { type: contentFormat, body: contentText.trim() } : null,
           cover_image_url: coverImageUrl.trim() || null,
+          youtube_url: youtubeUrl.trim() || null,
           category_id: categoryId ? Number(categoryId) : null,
           status,
           published_at: finalPublishedAt,
@@ -207,9 +266,28 @@ export function PostForm({
           seo_description: seoDescription.trim() || null,
           canonical_url: canonicalUrl.trim() || null,
           no_index: Boolean(noIndex),
+          tag_ids: selectedTagIds,
         });
       }}
     >
+      <Modal
+        open={codeEditorOpen}
+        title="Editor HTML/CSS"
+        onClose={() => setCodeEditorOpen(false)}
+        maxWidthClassName="max-w-6xl"
+      >
+        <div className="rounded-2xl border border-[#30363d] bg-[#0d1117] shadow-inner overflow-hidden">
+          <CodeMirror
+            value={contentText}
+            height="70vh"
+            theme={vscodeDark}
+            extensions={[html()]}
+            onChange={(value) => setContentText(value)}
+            basicSetup={{ lineNumbers: true, foldGutter: true }}
+          />
+        </div>
+      </Modal>
+
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-semibold text-[var(--subtle-text)]">Título</label>
@@ -367,6 +445,17 @@ export function PostForm({
         </div>
 
         <div className="flex flex-col gap-2 lg:col-span-2">
+          <label className="text-sm font-semibold text-[var(--subtle-text)]">Video URL (YouTube)</label>
+          <input
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className="h-11 rounded-xl border border-[var(--border-color)] bg-transparent px-3 outline-none focus:border-[var(--color-500)] transition-colors"
+          />
+          <p className="text-xs text-[var(--subtle-text)]">Opcional. Se guarda como video relacionado del post.</p>
+        </div>
+
+        <div className="flex flex-col gap-2 lg:col-span-2">
           <label className="text-sm font-semibold text-[var(--subtle-text)]">Resumen</label>
           <textarea
             value={excerpt}
@@ -377,15 +466,151 @@ export function PostForm({
           />
         </div>
 
+        <div className="flex flex-col gap-3 lg:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <label className="text-sm font-semibold text-[var(--subtle-text)]">Tags</label>
+            <span className="text-xs text-[var(--subtle-text)]">
+              {selectedTagIds.length} seleccionados
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {selectedTagIds.length === 0 ? (
+              <span className="text-xs text-[var(--subtle-text)]">Sin tags seleccionados.</span>
+            ) : (
+              tags
+                .filter((tag) => selectedTagIds.includes(tag.id))
+                .map((tag) => (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] px-3 py-1 text-xs font-semibold hover:border-[var(--color-500)] transition-colors"
+                    onClick={() =>
+                      setSelectedTagIds((prev) => prev.filter((id) => id !== tag.id))
+                    }
+                  >
+                    #{tag.name}
+                    <span className="text-[var(--subtle-text)]">×</span>
+                  </button>
+                ))
+            )}
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-[1fr,auto] sm:items-center">
+            <input
+              value={tagQuery}
+              onChange={(e) => setTagQuery(e.target.value)}
+              placeholder="Buscar o crear tag…"
+              className="h-11 rounded-xl border border-[var(--border-color)] bg-transparent px-3 outline-none focus:border-[var(--color-500)] transition-colors"
+            />
+            <button
+              type="button"
+              className="h-11 px-4 rounded-xl border border-[var(--border-color)] font-semibold hover:border-[var(--color-500)] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              disabled={tagCreating || !tagQueryTrimmed || tagExists}
+              onClick={async () => {
+                const name = tagQueryTrimmed;
+                if (!name) return;
+                const slug = slugify(name);
+                if (tagExists) return;
+                try {
+                  setTagCreating(true);
+                  const created = await createTag({ name, slug });
+                  setTags((prev) => [created, ...prev]);
+                  setSelectedTagIds((prev) => [...new Set([...prev, created.id])]);
+                  setTagQuery("");
+                  toast.success("Tag creado.");
+                } catch (err) {
+                  toast.error(err?.message || "No se pudo crear el tag.");
+                } finally {
+                  setTagCreating(false);
+                }
+              }}
+            >
+              {tagCreating ? "Creando…" : "Crear tag"}
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {tags
+              .filter((tag) => {
+                if (!tagQuery.trim()) return true;
+                const q = tagQuery.trim().toLowerCase();
+                return tag.name.toLowerCase().includes(q) || tag.slug.toLowerCase().includes(q);
+              })
+              .map((tag) => {
+                const active = selectedTagIds.includes(tag.id);
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    className={[
+                      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+                      active
+                        ? "bg-[var(--color-500)] text-white"
+                        : "border border-[var(--border-color)] hover:border-[var(--color-500)]",
+                    ].join(" ")}
+                    onClick={() =>
+                      setSelectedTagIds((prev) =>
+                        active ? prev.filter((id) => id !== tag.id) : [...prev, tag.id],
+                      )
+                    }
+                  >
+                    {tag.name}
+                  </button>
+                );
+              })}
+          </div>
+        </div>
+
         <div className="flex flex-col gap-2 lg:col-span-2">
-          <label className="text-sm font-semibold text-[var(--subtle-text)]">Contenido</label>
-          <textarea
-            value={contentText}
-            onChange={(e) => setContentText(e.target.value)}
-            rows={12}
-            placeholder="Contenido del artículo (por ahora Markdown)…"
-            className="rounded-xl border border-[var(--border-color)] bg-transparent px-3 py-2 outline-none focus:border-[var(--color-500)] transition-colors resize-y"
-          />
+          <label className="text-sm font-semibold text-[var(--subtle-text)]">Formato de contenido</label>
+          <select
+            value={contentFormat}
+            onChange={(e) => setContentFormat(e.target.value)}
+            className="h-11 rounded-xl border border-[var(--border-color)] bg-transparent px-3 outline-none focus:border-[var(--color-500)] transition-colors"
+          >
+            <option value="html">HTML/CSS</option>
+            <option value="markdown">Markdown</option>
+          </select>
+          <p className="text-xs text-[var(--subtle-text)]">
+            Puedes usar HTML y CSS (por ejemplo, incluir un <code>&lt;style&gt;</code>).
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2 lg:col-span-2">
+          <div className="flex items-center justify-between gap-3">
+            <label className="text-sm font-semibold text-[var(--subtle-text)]">Contenido</label>
+            {isHtmlContent ? (
+              <button
+                type="button"
+                className="text-xs font-semibold rounded-full border border-[var(--border-color)] px-3 py-1 hover:border-[var(--color-500)] transition-colors"
+                onClick={() => setCodeEditorOpen(true)}
+              >
+                Ver en grande
+              </button>
+            ) : null}
+          </div>
+          {isHtmlContent ? (
+            <div className={editorWrapperClassName}>
+              <CodeMirror
+                value={contentText}
+                height="320px"
+                theme={vscodeDark}
+                extensions={[html()]}
+                onChange={(value) => setContentText(value)}
+                basicSetup={{ lineNumbers: true, foldGutter: true }}
+              />
+            </div>
+          ) : (
+            <textarea
+              value={contentText}
+              onChange={(e) => setContentText(e.target.value)}
+              rows={12}
+              placeholder="Contenido del art?culo (Markdown)?"
+              className={contentTextareaClassName}
+              spellCheck
+            />
+          )}
         </div>
 
         <div className="flex flex-col gap-3 lg:col-span-2">

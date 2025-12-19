@@ -1,35 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Modal } from "../../../components/ui/Modal";
-import { createPost } from "../../../features/posts/services/postsService";
-import { PostForm } from "../../../features/posts/components/PostForm";
+import { createTag } from "../../../features/tags/services/tagsService";
+import { TagForm } from "../../../features/tags/components/TagForm";
 import { useToast } from "../../../components/ui/ToastProvider";
 
-export default function PostNewPage() {
+export default function TagNewPage() {
   const navigate = useNavigate();
   const toast = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
   return (
-    <Modal open title="Nuevo artículo" onClose={() => navigate("/dashboard/posts")}>
-      <PostForm
+    <Modal open title="Nuevo tag" onClose={() => navigate("/dashboard/tags")}>
+      <TagForm
         mode="create"
         variant="modal"
         submitLabel="Crear"
         submitting={submitting}
         error={error}
-        onCancel={() => navigate("/dashboard/posts")}
+        onCancel={() => navigate("/dashboard/tags")}
         onSubmit={async (values) => {
           setSubmitting(true);
           setError("");
           try {
-            const created = await createPost(values);
-            toast.success("Artículo creado.");
-            navigate(`/dashboard/posts/${created.id}/edit`, { replace: true });
+            await createTag(values);
+            toast.success("Tag creado.");
+            navigate("/dashboard/tags", { replace: true });
           } catch (err) {
-            setError(err?.message || "No se pudo crear el artículo.");
-            toast.error(err?.message || "No se pudo crear el artículo.");
+            setError(err?.message || "No se pudo crear el tag.");
+            toast.error(err?.message || "No se pudo crear el tag.");
           } finally {
             setSubmitting(false);
           }
@@ -38,3 +38,4 @@ export default function PostNewPage() {
     </Modal>
   );
 }
+

@@ -8,9 +8,12 @@ import CategoriesLayout from "../pages/dashboard/categories/layout.jsx";
 import CategoryNewPage from "../pages/dashboard/categories/new.jsx";
 import CategoryEditPage from "../pages/dashboard/categories/edit.jsx";
 import TagsPage from "../pages/dashboard/tags";
+import TagNewPage from "../pages/dashboard/tags/new.jsx";
+import TagEditPage from "../pages/dashboard/tags/edit.jsx";
 import PagesPage from "../pages/dashboard/pages";
 import PortfolioPage from "../pages/dashboard/portfolio";
 import UsersPage from "../pages/dashboard/users";
+import SettingsPage from "../pages/dashboard/settings";
 import { ProtectedRoute } from "./ProtectedRoute";
 import DashboardLayout from "../components/dashboard/DashboardLayout";
 
@@ -37,10 +40,14 @@ export function AppRoutes() {
           <Route path="new" element={<CategoryNewPage />} />
           <Route path=":categoryId/edit" element={<CategoryEditPage />} />
         </Route>
-        <Route path="tags" element={<TagsPage />} />
+        <Route path="tags" element={<TagsPage />}>
+          <Route path="new" element={<TagNewPage />} />
+          <Route path=":tagId/edit" element={<TagEditPage />} />
+        </Route>
         <Route path="pages" element={<PagesPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

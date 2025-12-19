@@ -3,10 +3,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Modal } from "../../../components/ui/Modal";
 import { getCategoryById, updateCategory } from "../../../features/categories/services/categoriesService";
 import { CategoryForm } from "../../../features/categories/components/CategoryForm";
+import { useToast } from "../../../components/ui/ToastProvider";
+import { getChangedFields } from "../../../lib/patch";
 
 export default function CategoryEditPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -57,13 +60,20 @@ export default function CategoryEditPage() {
           error={error}
           onCancel={() => navigate("/dashboard/categories")}
           onSubmit={async (values) => {
-            setSubmitting(true);
-            setError("");
             try {
-              const updated = await updateCategory(categoryId, values);
+              const patch = getChangedFields(values, initialValues);
+              if (Object.keys(patch).length === 0) {
+                toast.info("No hay cambios para guardar.");
+                return;
+              }
+              setSubmitting(true);
+              setError("");
+              const updated = await updateCategory(categoryId, patch);
               setInitialValues(updated);
+              toast.success("Categoría actualizada.");
             } catch (err) {
               setError(err?.message || "No se pudo guardar la categoría.");
+              toast.error(err?.message || "No se pudo guardar la categoría.");
             } finally {
               setSubmitting(false);
             }
@@ -73,4 +83,3 @@ export default function CategoryEditPage() {
     </Modal>
   );
 }
-

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Button, Card, CardBody, CardHeader, Input, Link, Spacer } from "@heroui/react";
 import { useAuth } from "../../../hooks/useAuth";
+import { useToast } from "../../../components/ui/ToastProvider";
 
 export default function AuthForm() {
   const { user, loading, error, signIn, signUp, signOut } = useAuth();
+  const toast = useToast();
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,12 +20,14 @@ export default function AuthForm() {
       if (mode === "login") {
         await signIn(email, password);
         setMessage("Sesión iniciada.");
+        toast.success("Sesión iniciada.");
       } else {
         await signUp(email, password);
         setMessage("Registro completado. Revisa tu correo si requiere confirmación.");
+        toast.success("Registro completado.");
       }
     } catch (err) {
-      // error ya manejado en el contexto
+      toast.error(err?.message || "No se pudo completar la acción.");
     } finally {
       setSubmitting(false);
     }

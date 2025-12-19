@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { deleteCategory, listCategories } from "../services/categoriesService";
+import { deleteTag, listTags } from "../services/tagsService";
 import { Pagination } from "../../../components/ui/Pagination";
 import { useToast } from "../../../components/ui/ToastProvider";
 
 const PAGE_SIZE = 10;
 
-export function CategoriesList() {
+export function TagsList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
   const page = Number(searchParams.get("page") ?? "1") || 1;
@@ -25,7 +25,7 @@ export function CategoriesList() {
     setLoading(true);
     setError("");
 
-    listCategories({ page, pageSize: PAGE_SIZE, query: q })
+    listTags({ page, pageSize: PAGE_SIZE, query: q })
       .then(({ data, count }) => {
         if (cancelled) return;
         setRows(data);
@@ -33,7 +33,7 @@ export function CategoriesList() {
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err?.message || "No se pudieron cargar las categorías.");
+        setError(err?.message || "No se pudieron cargar los tags.");
       })
       .finally(() => {
         if (cancelled) return;
@@ -57,22 +57,22 @@ export function CategoriesList() {
   };
 
   const refresh = async () => {
-    const { data, count } = await listCategories({ page, pageSize: PAGE_SIZE, query: q });
+    const { data, count } = await listTags({ page, pageSize: PAGE_SIZE, query: q });
     setRows(data);
     setTotal(count);
   };
 
-  const handleDelete = async (categoryId, name) => {
-    const ok = window.confirm(`¿Eliminar "${name || "categoría"}"? Esta acción no se puede deshacer.`);
+  const handleDelete = async (tagId, name) => {
+    const ok = window.confirm(`¿Eliminar "${name || "tag"}"? Esta acción no se puede deshacer.`);
     if (!ok) return;
 
     try {
-      await deleteCategory(categoryId);
+      await deleteTag(tagId);
       await refresh();
-      toast.success("Categoría eliminada.");
+      toast.success("Tag eliminado.");
     } catch (err) {
-      setError(err?.message || "No se pudo eliminar la categoría.");
-      toast.error(err?.message || "No se pudo eliminar la categoría.");
+      setError(err?.message || "No se pudo eliminar el tag.");
+      toast.error(err?.message || "No se pudo eliminar el tag.");
     }
   };
 
@@ -96,7 +96,7 @@ export function CategoriesList() {
         <section className="theme-surface bg-[var(--panel-color)] rounded-2xl p-4 shadow-sm">
           <p className="text-sm text-[rgba(248,113,113,0.95)] font-semibold">{error}</p>
           <p className="text-xs text-[var(--subtle-text)] mt-1">
-            Revisa que exista la tabla <code className="font-semibold">categories</code> y que tus policies de RLS
+            Revisa que exista la tabla <code className="font-semibold">tags</code> y que tus policies de RLS
             permitan <code className="font-semibold">SELECT/INSERT/UPDATE/DELETE</code>.
           </p>
         </section>
@@ -108,7 +108,7 @@ export function CategoriesList() {
           {loading ? (
             <div className="px-4 py-6 text-sm text-[var(--subtle-text)]">Cargando…</div>
           ) : rows.length === 0 ? (
-            <div className="px-4 py-6 text-sm text-[var(--subtle-text)]">No hay categorías aún.</div>
+            <div className="px-4 py-6 text-sm text-[var(--subtle-text)]">No hay tags aún.</div>
           ) : (
             <div className="p-4 space-y-3">
               {rows.map((row) => (
@@ -128,7 +128,7 @@ export function CategoriesList() {
 
                   <div className="mt-3 grid grid-cols-2 gap-2">
                     <Link
-                      to={`/dashboard/categories/${row.id}/edit`}
+                      to={`/dashboard/tags/${row.id}/edit`}
                       className="h-10 rounded-xl border border-[var(--border-color)] font-semibold hover:border-[var(--color-500)] transition-colors flex items-center justify-center"
                     >
                       Editar
@@ -159,7 +159,7 @@ export function CategoriesList() {
           {loading ? (
             <div className="mt-3 text-sm text-[var(--subtle-text)] px-3 py-6">Cargando…</div>
           ) : rows.length === 0 ? (
-            <div className="mt-3 text-sm text-[var(--subtle-text)] px-3 py-6">No hay categorías aún.</div>
+            <div className="mt-3 text-sm text-[var(--subtle-text)] px-3 py-6">No hay tags aún.</div>
           ) : (
             <div className="mt-3 flex flex-col gap-3">
               {rows.map((row) => (
@@ -177,7 +177,7 @@ export function CategoriesList() {
                     </div>
                     <div className="flex items-center justify-end gap-2">
                       <Link
-                        to={`/dashboard/categories/${row.id}/edit`}
+                        to={`/dashboard/tags/${row.id}/edit`}
                         className="h-10 px-3 rounded-xl border border-[var(--border-color)] font-semibold hover:border-[var(--color-500)] transition-colors inline-flex items-center justify-center leading-none"
                       >
                         Editar
@@ -204,3 +204,4 @@ export function CategoriesList() {
     </div>
   );
 }
+

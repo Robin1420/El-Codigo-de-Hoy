@@ -38,9 +38,9 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="flex justify-end">
+    <header className="flex justify-end relative z-50">
       {profile && (
-        <div className="relative" ref={menuRef}>
+        <div className="relative z-50" ref={menuRef}>
           <button
             aria-label="Abrir menú de usuario"
             className="inline-flex items-center gap-3 rounded-full h-11 bg-[var(--panel-color)] border border-[var(--border-color)] hover:border-[var(--color-500)] transition-colors shadow-sm min-w-[120px] px-3"
@@ -79,7 +79,7 @@ export default function Header() {
           </button>
 
           {menuOpen && (
-            <div className="absolute right-0 top-12 w-52 rounded-xl border border-[var(--border-color)] bg-[var(--panel-color)] shadow-lg p-2 flex flex-col gap-1">
+            <div className="absolute right-0 top-12 z-50 w-52 rounded-xl border border-[var(--border-color)] bg-[var(--panel-color)] shadow-lg p-2 flex flex-col gap-1">
               <Link
                 to="/dashboard/settings"
                 className="px-3 py-2 rounded-lg hover:bg-[rgba(255,255,255,0.06)] text-sm font-semibold transition-colors"
@@ -103,4 +103,3 @@ export default function Header() {
     </header>
   );
 }
-

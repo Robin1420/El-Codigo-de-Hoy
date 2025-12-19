@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Modal } from "../../../components/ui/Modal";
-import { getPostById, updatePost } from "../../../features/posts/services/postsService";
-import { PostForm } from "../../../features/posts/components/PostForm";
+import { getTagById, updateTag } from "../../../features/tags/services/tagsService";
+import { TagForm } from "../../../features/tags/components/TagForm";
 import { useToast } from "../../../components/ui/ToastProvider";
 import { getChangedFields } from "../../../lib/patch";
 
-export default function PostEditPage() {
-  const { postId } = useParams();
+export default function TagEditPage() {
+  const { tagId } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -21,14 +21,14 @@ export default function PostEditPage() {
     setLoading(true);
     setError("");
 
-    getPostById(postId)
-      .then((post) => {
+    getTagById(tagId)
+      .then((tag) => {
         if (cancelled) return;
-        setInitialValues(post);
+        setInitialValues(tag);
       })
       .catch((err) => {
         if (cancelled) return;
-        setError(err?.message || "No se pudo cargar el artículo.");
+        setError(err?.message || "No se pudo cargar el tag.");
       })
       .finally(() => {
         if (cancelled) return;
@@ -38,28 +38,27 @@ export default function PostEditPage() {
     return () => {
       cancelled = true;
     };
-  }, [postId]);
+  }, [tagId]);
 
   return (
     <Modal
       open
-      title={loading ? "Cargando…" : initialValues?.title ? `Editar: ${initialValues.title}` : "Editar artículo"}
-      onClose={() => navigate("/dashboard/posts")}
-      maxWidthClassName="max-w-2xl"
+      title={loading ? "Cargando…" : initialValues?.name ? `Editar: ${initialValues.name}` : "Editar tag"}
+      onClose={() => navigate("/dashboard/tags")}
     >
       {error && !initialValues ? (
         <div className="rounded-xl border border-[rgba(248,113,113,0.35)] bg-[rgba(248,113,113,0.08)] px-4 py-3">
           <p className="text-sm font-semibold text-[rgba(248,113,113,0.95)]">{error}</p>
         </div>
       ) : (
-        <PostForm
+        <TagForm
           mode="edit"
           variant="modal"
           initialValues={initialValues}
           submitLabel="Guardar"
           submitting={submitting || loading}
           error={error}
-          onCancel={() => navigate("/dashboard/posts")}
+          onCancel={() => navigate("/dashboard/tags")}
           onSubmit={async (values) => {
             try {
               const patch = getChangedFields(values, initialValues);
@@ -69,12 +68,12 @@ export default function PostEditPage() {
               }
               setSubmitting(true);
               setError("");
-              const updated = await updatePost(postId, patch);
+              const updated = await updateTag(tagId, patch);
               setInitialValues(updated);
-              toast.success("Artículo actualizado.");
+              toast.success("Tag actualizado.");
             } catch (err) {
-              setError(err?.message || "No se pudo guardar el artículo.");
-              toast.error(err?.message || "No se pudo guardar el artículo.");
+              setError(err?.message || "No se pudo guardar el tag.");
+              toast.error(err?.message || "No se pudo guardar el tag.");
             } finally {
               setSubmitting(false);
             }
@@ -84,3 +83,4 @@ export default function PostEditPage() {
     </Modal>
   );
 }
+
