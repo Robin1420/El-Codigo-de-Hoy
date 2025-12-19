@@ -131,9 +131,7 @@ export default function DashboardLayout({ children }) {
           >
             <div className="h-16 px-4 flex items-center justify-between border-b border-[var(--border-color)]">
               <div className="flex flex-col leading-tight">
-                <span className="text-xs tracking-[0.25em] uppercase text-[var(--subtle-text)]">
-                  Panel
-                </span>
+                <span className="text-xs tracking-[0.25em] uppercase text-[var(--subtle-text)]">Panel</span>
                 <span className="text-sm font-semibold">Administración</span>
               </div>
               <button
@@ -180,10 +178,11 @@ export default function DashboardLayout({ children }) {
           </aside>
         </div>
 
-        <main className="theme-surface bg-[var(--panel-color)] border border-[var(--border-color)] rounded-2xl p-6 min-h-[60vh] shadow-sm transition-[background-color,color,border-color] duration-200 ease">
+        <main className="min-h-[60vh] flex flex-col gap-4 transition-[color] duration-200 ease">
           {children ?? <Outlet />}
         </main>
       </div>
     </div>
   );
 }
+

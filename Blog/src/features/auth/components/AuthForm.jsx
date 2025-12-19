@@ -37,41 +37,9 @@ export default function AuthForm() {
   const cardClass =
     "w-full max-w-xl border border-[var(--border-color)] bg-[var(--panel-color)] shadow-lg";
 
-  if (loading) {
-    return (
-      <Card className={cardClass}>
-        <CardBody className="text-[var(--subtle-text)]">Verificando sesión...</CardBody>
-      </Card>
-    );
-  }
+  if (loading) return null;
 
-  if (user) {
-    return (
-      <Card className={cardClass}>
-        <CardHeader className="flex flex-col items-start gap-1">
-          <p className="text-sm text-[var(--subtle-text)]">Sesión activa</p>
-          <p className="text-lg font-semibold text-[var(--text-color)]">{user.email}</p>
-        </CardHeader>
-        <CardBody className="flex flex-col gap-3">
-          <Button
-            color="default"
-            variant="flat"
-            onPress={toggleMode}
-            className="border border-[var(--border-color)]"
-          >
-            {mode === "login" ? "Quiero registrarme" : "Ya tengo cuenta"}
-          </Button>
-          <Button
-            color="primary"
-            onPress={signOut}
-            className="bg-[var(--color-500)] text-white hover:bg-[var(--color-600)]"
-          >
-            Cerrar sesión
-          </Button>
-        </CardBody>
-      </Card>
-    );
-  }
+  if (user) return null;
 
   return (
     <Card className={cardClass}>

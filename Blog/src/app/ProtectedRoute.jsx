@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../hooks/useAuth";
+import { FullScreenLoader } from "../components/ui/FullScreenLoader";
 
 export function ProtectedRoute({ children, requiredRole = "admin" }) {
   const { user } = useAuth();
@@ -36,11 +37,7 @@ export function ProtectedRoute({ children, requiredRole = "admin" }) {
   }, [user]);
 
   if (loading) {
-    return (
-      <main className="min-h-screen grid place-items-center bg-[var(--bg-color)] text-[var(--text-color)]">
-        <p className="text-sm text-[var(--subtle-text)]">Verificando permisos...</p>
-      </main>
-    );
+    return <FullScreenLoader />;
   }
 
   if (!user) {

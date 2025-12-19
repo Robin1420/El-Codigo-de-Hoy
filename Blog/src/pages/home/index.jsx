@@ -4,9 +4,10 @@ import AuthForm from "../../features/auth/components/AuthForm.jsx";
 import { useAuth } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabaseClient";
 import { ThemeToggle } from "../../components/ui/ThemeToggle.jsx";
+import { FullScreenLoader } from "../../components/ui/FullScreenLoader.jsx";
 
 export default function HomePage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [checkingRole, setCheckingRole] = useState(false);
 
@@ -33,6 +34,10 @@ export default function HomePage() {
     };
   }, [user, navigate]);
 
+  if (authLoading || checkingRole) {
+    return <FullScreenLoader />;
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col gap-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -51,9 +56,6 @@ export default function HomePage() {
       </header>
 
       <section className="grid place-items-center">
-        {checkingRole && (
-          <p className="text-sm text-[var(--subtle-text)] mb-2">Verificando rol...</p>
-        )}
         <AuthForm />
       </section>
     </div>

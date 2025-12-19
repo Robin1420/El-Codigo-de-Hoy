@@ -1,8 +1,12 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "../pages/home";
 import DashboardHome from "../pages/dashboard";
-import PostsPage from "../pages/dashboard/posts";
-import CategoriesPage from "../pages/dashboard/categories";
+import PostsLayout from "../pages/dashboard/posts/layout.jsx";
+import PostNewPage from "../pages/dashboard/posts/new.jsx";
+import PostEditPage from "../pages/dashboard/posts/edit.jsx";
+import CategoriesLayout from "../pages/dashboard/categories/layout.jsx";
+import CategoryNewPage from "../pages/dashboard/categories/new.jsx";
+import CategoryEditPage from "../pages/dashboard/categories/edit.jsx";
 import TagsPage from "../pages/dashboard/tags";
 import PagesPage from "../pages/dashboard/pages";
 import PortfolioPage from "../pages/dashboard/portfolio";
@@ -25,8 +29,14 @@ export function AppRoutes() {
         }
       >
         <Route index element={<DashboardHome />} />
-        <Route path="posts" element={<PostsPage />} />
-        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="posts" element={<PostsLayout />}>
+          <Route path="new" element={<PostNewPage />} />
+          <Route path=":postId/edit" element={<PostEditPage />} />
+        </Route>
+        <Route path="categories" element={<CategoriesLayout />}>
+          <Route path="new" element={<CategoryNewPage />} />
+          <Route path=":categoryId/edit" element={<CategoryEditPage />} />
+        </Route>
         <Route path="tags" element={<TagsPage />} />
         <Route path="pages" element={<PagesPage />} />
         <Route path="portfolio" element={<PortfolioPage />} />
