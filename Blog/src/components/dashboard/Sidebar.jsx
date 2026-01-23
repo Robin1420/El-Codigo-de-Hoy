@@ -4,12 +4,11 @@ import { supabase } from "../../lib/supabaseClient";
 const links = [
   { label: "Dashboard", to: "/dashboard" },
   { label: "Posts", to: "/dashboard/posts" },
-  { label: "Categorías", to: "/dashboard/categories" },
+  { label: "Categor\u00edas", to: "/dashboard/categories" },
   { label: "Tags", to: "/dashboard/tags" },
-  { label: "Páginas", to: "/dashboard/pages" },
   { label: "Portfolio", to: "/dashboard/portfolio" },
   { label: "Usuarios", to: "/dashboard/users" },
-  { label: "Configuración", to: "/dashboard/settings" },
+  { label: "Configuraci\u00f3n", to: "/dashboard/settings" },
 ];
 
 export default function Sidebar() {
@@ -22,7 +21,7 @@ export default function Sidebar() {
     <aside className="w-64 min-h-screen bg-[#1f2026] text-white flex flex-col p-5 gap-6 border-r border-[rgba(255,255,255,0.08)]">
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-gray-400">Panel</p>
-        <h2 className="text-xl font-semibold">Administración</h2>
+        <h2 className="text-xl font-semibold">Administraci\u00f3n</h2>
       </div>
 
       <nav className="flex flex-col gap-2 text-sm font-medium">
@@ -46,8 +45,10 @@ export default function Sidebar() {
         className="mt-auto rounded-lg px-3 py-2 text-sm font-semibold bg-[#F4320B] hover:bg-[#C82909] transition-colors"
         onClick={handleLogout}
       >
-        Cerrar sesión
+        Cerrar sesi\u00f3n
       </button>
     </aside>
   );
 }
+
+
