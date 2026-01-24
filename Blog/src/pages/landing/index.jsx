@@ -89,8 +89,8 @@ export default function LandingPage() {
         <PublicNav />
         <PublicFloatNav />
 
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-[70%_30%] min-h-[70vh]">
-          <div className="relative border-2 border-[var(--color-500)] rounded-lg p-1 overflow-hidden min-h-[60vh]">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-[75%_25%] min-h-[70vh]">
+          <div className="relative border-2 border-[var(--color-500)] rounded-lg overflow-hidden min-h-[60vh]">
             {loading && <p className="text-[var(--subtle-text)] p-4">Cargando último post...</p>}
             {error && <p className="text-red-400 text-sm p-4">{error}</p>}
             {!loading && !error && !lastPost && (
@@ -131,7 +131,7 @@ export default function LandingPage() {
             )}
           </div>
 
-          <div className="border-2 border-[var(--color-500)] rounded-lg p-2 grid grid-rows-6 gap-3 h-full">
+          <div className="border-2 border-[var(--color-500)] rounded-lg grid grid-rows-6 gap-3 h-full mr-[14px]">
             {loading && <p className="text-[var(--subtle-text)] p-4">Cargando último post...</p>}
             {error && <p className="text-red-400 text-sm px-2">{error}</p>}
             {!loading &&
@@ -186,21 +186,30 @@ export default function LandingPage() {
 
         {/* Sección Virales / Categorías */}
         <section className="mt-10 flex flex-col gap-6">
-          <div className="border border-[var(--border-color)] rounded-lg px-4 py-2 bg-[var(--color-500)] text-white backdrop-blur-sm">
-            <div className="flex flex-wrap gap-3 text-sm text-[var(--subtle-text)] uppercase tracking-wide">
-              {(categorias.length ? categorias : ["Tecnología", "IA", "Ciberseguridad", "Gadgets"]).map((cat) => (
-                <span
-                  key={cat}
-                  className="px-3 py-1 rounded-full text-white"
-                >
-                  {cat}
-                </span>
-              ))}
+          <div className="border border-[var(--border-color)] rounded-lg px-3 py-1 bg-[var(--color-500)] text-white backdrop-blur-sm">
+            <div className="flex flex-wrap items-center gap-2 text-sm uppercase tracking-wide">
+              {(categorias.length ? categorias : ["Tecnología", "IA", "Ciberseguridad", "Gadgets"]).map(
+                (cat, idx, arr) => (
+                  <div key={`${cat}-${idx}`} className="flex items-center gap-2">
+                    <span className="px-3 py-1 rounded-full text-white">{cat}</span>
+                    {idx < arr.length - 1 && <span className="text-white opacity-80">|</span>}
+                  </div>
+                ),
+              )}
             </div>
           </div>
 
-          <div className="text-center">
-            <h2 className="text-3xl font-bold">VIRALES - VIRALES</h2>
+          <div className="relative text-center py-6 overflow-hidden h-24 sm:h-28">
+            <div className="pointer-events-none select-none absolute inset-0 opacity-50 flex items-center overflow-hidden">
+              <div className="marquee-virales virales-marquee-color flex items-center text-[14vw] sm:text-[10vw] lg:text-[8vw] font-black leading-none w-full">
+                {Array.from({ length: 12 }).map((_, idx) => (
+                  <span key={idx} className="mx-6 flex items-center gap-2">
+                    <span>VIRALES</span>
+                    <span className="text-[0.6em] sm:text-[0.7em] lg:text-[0.75em]">🔥</span>
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -226,7 +235,7 @@ export default function LandingPage() {
                   <div className="flex items-center gap-2 text-xs uppercase text-[var(--subtle-text)]">
                     {post.categories?.name && (
                       <span className="px-2 py-[2px] rounded-full bg-[rgba(255,255,255,0.05)] border border-[var(--border-color)]">
-                        {post.categories.name}
+                        <span className="font-bold text-white">{post.categories.name}</span>
                       </span>
                     )}
                     {post.published_at && <span>{formatDate(post.published_at)}</span>}

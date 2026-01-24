@@ -51,6 +51,31 @@ body {
   transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
 }
 
+/* Marquee "VIRALES" */
+@keyframes virales-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-virales {
+  display: flex;
+  gap: 1.5rem;
+  white-space: nowrap;
+  animation: virales-marquee 14s linear infinite;
+}
+
+.virales-marquee-color {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+:root:not(.dark) .virales-marquee-color {
+  color: rgba(0, 0, 0, 0.15);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
