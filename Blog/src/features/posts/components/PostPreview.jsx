@@ -18,37 +18,11 @@ function looksLikeHtml(text) {
   return /<\/?[a-z][\s\S]*>/i.test(text || "");
 }
 
-function getYouTubeId(url) {
-  try {
-    const parsed = new URL(url);
-    if (parsed.hostname.includes("youtu.be")) {
-      return parsed.pathname.replace("/", "");
-    }
-    if (parsed.pathname.startsWith("/shorts/")) {
-      return parsed.pathname.split("/")[2] || "";
-    }
-    if (parsed.pathname.startsWith("/embed/")) {
-      return parsed.pathname.split("/")[2] || "";
-    }
-    return parsed.searchParams.get("v") || "";
-  } catch {
-    return "";
-  }
-}
-
-function getYouTubeEmbedUrl(url) {
-  const id = getYouTubeId(url);
-  if (!id) return "";
-  return `https://www.youtube.com/embed/${id}`;
-}
-
 export function PostPreview({ post }) {
   const contentText = getContentText(post?.content);
   const tags = post?.post_tags?.map((item) => item?.tags?.name).filter(Boolean) ?? [];
   const contentType = getContentType(post?.content);
   const shouldRenderHtml = contentType === "html" || looksLikeHtml(contentText);
-  const youtubeUrl = post?.youtube_url || post?.youtube_links?.[0]?.youtube_url || "";
-  const youtubeEmbedUrl = getYouTubeEmbedUrl(youtubeUrl);
 
   return (
     <article className="flex flex-col gap-4">
@@ -87,20 +61,6 @@ export function PostPreview({ post }) {
           <p className="text-[var(--subtle-text)] leading-relaxed">{post.excerpt}</p>
         ) : null}
       </header>
-
-      {youtubeEmbedUrl ? (
-        <section className="rounded-2xl border border-[var(--border-color)] bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.03)] overflow-hidden">
-          <div className="aspect-video w-full">
-            <iframe
-              src={youtubeEmbedUrl}
-              title="Video relacionado"
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </section>
-      ) : null}
 
       <section className="rounded-2xl border border-[var(--border-color)] bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.03)] p-4">
         {contentText ? (
